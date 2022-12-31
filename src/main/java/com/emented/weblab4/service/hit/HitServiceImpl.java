@@ -15,15 +15,15 @@ import java.util.List;
 public class HitServiceImpl implements HitService {
 
     private final HitCheckRepository hitCheckRepository;
-    private final HitChecker hitChecker;
+    private final List<HitCheckStrategy> hitCheckStrategyList;
     private final Converter<HitCheck, HitCheckDTO> converter;
 
     @Autowired
     public HitServiceImpl(HitCheckRepository hitCheckRepository,
-                          HitChecker hitChecker,
+                          List<HitCheckStrategy> hitCheckStrategyList,
                           Converter<HitCheck, HitCheckDTO> converter) {
         this.hitCheckRepository = hitCheckRepository;
-        this.hitChecker = hitChecker;
+        this.hitCheckStrategyList = hitCheckStrategyList;
         this.converter = converter;
     }
 
@@ -33,7 +33,17 @@ public class HitServiceImpl implements HitService {
 
         hitCheck.setUserId(userId);
         hitCheck.setCheckDate(Instant.now());
-        hitCheck.setStatus(hitChecker.checkHit(hitCheck));
+
+        boolean hitCheckResult = false;
+
+        for (HitCheckStrategy hitCheckStrategy : hitCheckStrategyList) {
+            if (hitCheckStrategy.checkHit(hitCheck)) {
+                hitCheckResult = true;
+                break;
+            }
+        }
+
+        hitCheck.setStatus(hitCheckResult);
         hitCheck.setExecutionTime(System.currentTimeMillis() - hitCheck.getCheckDate().toEpochMilli());
 
         hitCheckRepository.saveHitCheck(hitCheck);
