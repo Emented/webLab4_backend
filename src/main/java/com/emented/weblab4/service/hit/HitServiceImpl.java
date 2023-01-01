@@ -4,6 +4,7 @@ package com.emented.weblab4.service.hit;
 import com.emented.weblab4.DAO.HitCheck;
 import com.emented.weblab4.DTO.HitCheckDTO;
 import com.emented.weblab4.repository.HitCheckRepository;
+import com.emented.weblab4.service.hit.strategy.HitCheckStrategy;
 import org.jooq.Converter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

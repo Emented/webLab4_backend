@@ -1,4 +1,4 @@
-package com.emented.weblab4.service.hit;
+package com.emented.weblab4.service.hit.strategy;
 
 import com.emented.weblab4.DAO.HitCheck;
 import org.springframework.stereotype.Service;

@@ -26,6 +26,8 @@ import java.util.Optional;
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
 
+    private final static String TOKEN_PREFIX = "Bearer ";
+
     private final JwtTokenUtil jwtTokenUtil;
     private final JwtUserDetailsService jwtUserDetailsService;
 
@@ -38,8 +40,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     private static Optional<String> getTokenHeader(HttpServletRequest request) {
         String requestTokenHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
-            return Optional.of(requestTokenHeader.substring(7));
+        if (requestTokenHeader != null && requestTokenHeader.startsWith(TOKEN_PREFIX)) {
+            return Optional.of(requestTokenHeader.substring(TOKEN_PREFIX.length()));
         }
         return Optional.empty();
     }
