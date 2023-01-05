@@ -1,9 +1,6 @@
 package com.emented.weblab4.controller;
 
-import com.emented.weblab4.DTO.JwtResponseDTO;
-import com.emented.weblab4.DTO.SuccessMessageDTO;
-import com.emented.weblab4.DTO.UserCredentialsDTO;
-import com.emented.weblab4.DTO.VerifyMessageDTO;
+import com.emented.weblab4.DTO.*;
 import com.emented.weblab4.sequrity.service.UserDetailsImpl;
 import com.emented.weblab4.service.user.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -35,14 +32,15 @@ public class AuthApiController {
                 .replace(servletRequest.getServletPath(), "");
         userService.registerUser(userCredentialsDTO, url);
 
-        SuccessMessageDTO successMessageDTO = new SuccessMessageDTO("Registration successful!");
+        SuccessMessageDTO successMessageDTO = new SuccessMessageDTO("Registration successful! Please check your mail!");
         return ResponseEntity.ok().body(successMessageDTO);
     }
 
     @PostMapping("/login")
     private ResponseEntity<JwtResponseDTO> loginUser(@RequestBody @NotNull @Valid UserCredentialsDTO userCredentialsDTO) {
-        String key = userService.loginUser(userCredentialsDTO);
-        return ResponseEntity.ok().body(new JwtResponseDTO(key));
+        JwtResponseDTO jwtResponseDTO = userService.loginUser(userCredentialsDTO);
+
+        return ResponseEntity.ok().body(jwtResponseDTO);
     }
 
     @PostMapping("/logout")
@@ -53,10 +51,19 @@ public class AuthApiController {
         return ResponseEntity.ok().body(successMessageDTO);
     }
 
+    @PostMapping("/refresh")
+    private ResponseEntity<JwtResponseDTO> refreshUser(@RequestBody @Valid RefreshTokenDTO refreshTokenDTO) {
+
+        JwtResponseDTO jwtResponseDTO = userService.refreshUser(refreshTokenDTO.getRefreshToken());
+
+        return ResponseEntity.ok().body(jwtResponseDTO);
+    }
+
     @GetMapping("/verify")
     private ResponseEntity<VerifyMessageDTO> verifyUser(@RequestParam("verification_code") String verificationCode) {
         userService.verifyUser(verificationCode);
-        VerifyMessageDTO verifyMessageDTO = new VerifyMessageDTO("Verification successful!");
+
+        VerifyMessageDTO verifyMessageDTO = new VerifyMessageDTO("Verification successful! You can login now!");
         return ResponseEntity.ok().body(verifyMessageDTO);
     }
 

@@ -2,13 +2,12 @@ package com.emented.weblab4.service.user;
 
 
 import com.emented.weblab4.DAO.User;
+import com.emented.weblab4.DTO.JwtResponseDTO;
 import com.emented.weblab4.DTO.UserCredentialsDTO;
-import com.emented.weblab4.exception.UserAlreadyExistsException;
-import com.emented.weblab4.exception.UserAlreadyVerifiedException;
-import com.emented.weblab4.exception.UserDoesNotExistException;
-import com.emented.weblab4.exception.VerificationMessageCannotBeSentException;
+import com.emented.weblab4.exception.*;
 import com.emented.weblab4.repository.UserRepository;
 import com.emented.weblab4.sequrity.service.JwtTokenUtil;
+import com.emented.weblab4.sequrity.service.JwtTokenUtilImpl;
 import com.emented.weblab4.sequrity.service.JwtUserDetailsService;
 import com.emented.weblab4.util.RandomKeyGen;
 import jakarta.mail.MessagingException;
@@ -45,7 +44,7 @@ public class UserServiceImpl implements UserService {
                            PasswordEncoder passwordEncoder,
                            RandomKeyGen randomKeyGen,
                            AuthenticationManager authenticationManager,
-                           JwtTokenUtil jwtTokenUtil,
+                           JwtTokenUtilImpl jwtTokenUtil,
                            JwtUserDetailsService jwtUserDetailsService,
                            EmailSenderService emailSenderService) {
         this.userRepository = userRepository;
@@ -87,14 +86,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String loginUser(UserCredentialsDTO userCredentialsDTO) {
+    public JwtResponseDTO loginUser(UserCredentialsDTO userCredentialsDTO) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(userCredentialsDTO.getEmail(),
                         userCredentialsDTO.getPassword()));
 
         UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(userCredentialsDTO.getEmail());
 
-        return jwtTokenUtil.generateToken(userDetails);
+        String email = userDetails.getUsername();
+        String accessToken = jwtTokenUtil.generateAccessToken(email);
+        String refreshToken = jwtTokenUtil.generateRefreshToken(email);
+
+        return new JwtResponseDTO(email, accessToken, refreshToken);
 
     }
 
@@ -120,5 +123,19 @@ public class UserServiceImpl implements UserService {
             log.info("User doesn't exist!");
             throw new UserDoesNotExistException("User does not exist!");
         }
+    }
+
+    @Override
+    public JwtResponseDTO refreshUser(String refreshToken) {
+
+        if (!jwtTokenUtil.validateRefreshToken(refreshToken)) {
+            throw new InvalidRefreshTokenException("Invalid refresh token!");
+        }
+
+        String username = jwtTokenUtil.getUsernameFromRefreshToken(refreshToken);
+        String accessToken = jwtTokenUtil.generateAccessToken(username);
+        String newRefreshToken = jwtTokenUtil.generateRefreshToken(username);
+
+        return new JwtResponseDTO(username, accessToken, newRefreshToken);
     }
 }

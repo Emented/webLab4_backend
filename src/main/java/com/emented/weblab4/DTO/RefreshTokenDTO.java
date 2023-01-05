@@ -1,12 +1,12 @@
 package com.emented.weblab4.DTO;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
-public class JwtResponseDTO {
+public class RefreshTokenDTO {
 
-    private final String email;
-    private final String accessToken;
+    @NotBlank
     private final String refreshToken;
 
 }

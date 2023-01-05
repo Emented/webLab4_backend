@@ -1,9 +1,6 @@
 package com.emented.weblab4.sequrity.service;
 
 
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.UnsupportedJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,7 +28,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     private final JwtTokenUtil jwtTokenUtil;
     private final JwtUserDetailsService jwtUserDetailsService;
 
-    public JwtRequestFilter(JwtTokenUtil jwtTokenUtil,
+    public JwtRequestFilter(JwtTokenUtilImpl jwtTokenUtil,
                             JwtUserDetailsService jwtUserDetailsService) {
         this.jwtTokenUtil = jwtTokenUtil;
         this.jwtUserDetailsService = jwtUserDetailsService;
@@ -54,31 +51,21 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         Optional<String> requestTokenHeaderOptional = getTokenHeader(request);
 
-        String username = null;
+        String username;
 
         if (requestTokenHeaderOptional.isPresent()) {
 
-            String requestTokenHeader = requestTokenHeaderOptional.get();
-
             try {
-                username = jwtTokenUtil.getUsernameFromToken(requestTokenHeader);
-            } catch (ExpiredJwtException e) {
-                log.error("JWT Token has expired");
-                System.out.println("JWT Token has expired");
-            } catch (UnsupportedJwtException e) {
-                log.error("JWT Token is not supported");
-                System.out.println("JWT Token is not supported");
-            } catch (MalformedJwtException | IllegalArgumentException e) {
-                log.error("JWT Token is not valid");
-                System.out.println("JWT Token is not valid");
-            }
 
-            try {
-                if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                String requestTokenHeader = requestTokenHeaderOptional.get();
 
-                    UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(username);
+                if (jwtTokenUtil.validateAccessToken(requestTokenHeader)) {
 
-                    if (jwtTokenUtil.validateToken(requestTokenHeader, userDetails)) {
+                    username = jwtTokenUtil.getUsernameFromAccessToken(requestTokenHeader);
+
+                    if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+
+                        UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(username);
 
                         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
                                 new UsernamePasswordAuthenticationToken(
@@ -91,13 +78,10 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                                 .getContext()
                                 .setAuthentication(usernamePasswordAuthenticationToken);
                     }
-
                 }
             } catch (UsernameNotFoundException e) {
-                log.error("User not found");
-                System.out.println("User not found");
+                log.error("Username not found: {}", e.getMessage());
             }
-
         }
 
         chain.doFilter(request, response);
