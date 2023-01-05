@@ -14,6 +14,7 @@ public class HitCheckConverter implements Converter<HitCheck, HitCheckDTO> {
     public HitCheckDTO from(HitCheck databaseObject) {
         HitCheckDTO hitCheckDTO = new HitCheckDTO();
 
+        hitCheckDTO.setId(databaseObject.getId());
         hitCheckDTO.setX(databaseObject.getX());
         hitCheckDTO.setY(databaseObject.getY());
         hitCheckDTO.setR(databaseObject.getR());

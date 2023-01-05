@@ -63,7 +63,7 @@ public class SecurityConfig {
                 .cors().configurationSource(
                         request -> {
                             CorsConfiguration corsConfiguration = new CorsConfiguration().applyPermitDefaultValues();
-                            corsConfiguration.setAllowedOrigins(List.of("http://localhost:3000"));
+                            corsConfiguration.setAllowedOrigins(List.of("http://localhost:8080"));
                             corsConfiguration.addAllowedMethod(HttpMethod.DELETE);
                             return corsConfiguration;
                         }
@@ -71,7 +71,13 @@ public class SecurityConfig {
                 .and()
                 .csrf().disable()
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/auth/login", "/api/v1/auth/register", "/api/v1/auth/verify", "/ping").permitAll()
+                        .requestMatchers("/api/v1/auth/login",
+                                "/api/v1/auth/register",
+                                "/api/v1/auth/verify",
+                                "/api/v1/auth/refresh",
+                                "/ping",
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**").permitAll()
                         .anyRequest().authenticated())
                 .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 .and()

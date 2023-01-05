@@ -7,6 +7,7 @@ import java.time.Instant;
 @Data
 public class HitCheckDTO {
 
+    private Integer id;
     private Double x;
     private Double y;
     private Double r;

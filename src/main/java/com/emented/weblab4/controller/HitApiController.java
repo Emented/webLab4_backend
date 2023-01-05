@@ -44,15 +44,16 @@ public class HitApiController {
     }
 
     @GetMapping("/hits")
-    private ResponseEntity<List<HitCheckDTO>> getHits(@PathVariable(required = false) Double radius,
-                                                      @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        List<HitCheckDTO> result;
+    private ResponseEntity<List<HitCheckDTO>> getHits(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        List<HitCheckDTO> result = hitService.getAllHitsForUser(userDetails.getUserId());
 
-        if (radius == null) {
-            result = hitService.getAllHitsForUser(userDetails.getUserId());
-        } else {
-            result = hitService.getHitsForUserByRadius(userDetails.getUserId(), radius);
-        }
+        return ResponseEntity.ok().body(result);
+    }
+
+    @GetMapping("/hits/{radius}")
+    private ResponseEntity<List<HitCheckDTO>> getHitsByR(@PathVariable @NotNull Double radius,
+                                                         @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        List<HitCheckDTO> result = hitService.getHitsForUserByRadius(userDetails.getUserId(), radius);
 
         return ResponseEntity.ok().body(result);
     }

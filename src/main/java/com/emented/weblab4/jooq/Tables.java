@@ -11,7 +11,7 @@ import com.emented.weblab4.jooq.tables.Users;
 /**
  * Convenience access to all tables in s336189.
  */
-@SuppressWarnings({"all", "unchecked", "rawtypes"})
+@SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Tables {
 
     /**
