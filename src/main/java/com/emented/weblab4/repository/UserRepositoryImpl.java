@@ -58,6 +58,7 @@ public class UserRepositoryImpl implements UserRepository {
     public void updateUser(User user) {
         dslContext.update(Tables.USERS)
                 .set(userMapper.unmap(user))
+                .where(Tables.USERS.EMAIL.eq(user.getEmail()))
                 .execute();
     }
 

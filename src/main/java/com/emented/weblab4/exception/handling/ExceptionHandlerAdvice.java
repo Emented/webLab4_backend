@@ -2,6 +2,7 @@ package com.emented.weblab4.exception.handling;
 
 
 import com.emented.weblab4.DTO.ErrorDTO;
+import com.emented.weblab4.exception.InvalidRefreshTokenException;
 import com.emented.weblab4.exception.UserAlreadyExistsException;
 import com.emented.weblab4.exception.UserDoesNotExistException;
 import org.springframework.http.HttpStatus;
@@ -55,6 +56,12 @@ public class ExceptionHandlerAdvice {
     @ExceptionHandler(value = UserDoesNotExistException.class)
     private ResponseEntity<ErrorDTO> handleUserDoesNotExistException(UserDoesNotExistException e) {
         ErrorDTO errorDTO = new ErrorDTO("User is already verified or code is wrong!");
+        return new ResponseEntity<>(errorDTO, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(value = InvalidRefreshTokenException.class)
+    private ResponseEntity<ErrorDTO> handleInvalidRefreshTokenException(InvalidRefreshTokenException e) {
+        ErrorDTO errorDTO = new ErrorDTO(e.getMessage());
         return new ResponseEntity<>(errorDTO, HttpStatus.BAD_REQUEST);
     }
 
