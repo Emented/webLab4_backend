@@ -71,12 +71,14 @@ public class SecurityConfig {
                 .and()
                 .csrf().disable()
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/auth/login",
+                        .antMatchers("/api/v1/auth/login",
                                 "/api/v1/auth/register",
                                 "/api/v1/auth/verify",
                                 "/api/v1/auth/refresh",
                                 "/ping",
                                 "/v3/api-docs/**",
+                                "/v3/api-docs**",
+                                "/swagger-ui**",
                                 "/swagger-ui/**").permitAll()
                         .anyRequest().authenticated())
                 .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint)

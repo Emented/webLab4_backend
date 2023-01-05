@@ -4,13 +4,13 @@ import com.emented.weblab4.DTO.HitCheckDTO;
 import com.emented.weblab4.DTO.SuccessMessageDTO;
 import com.emented.weblab4.sequrity.service.UserDetailsImpl;
 import com.emented.weblab4.service.hit.HitService;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @RestController

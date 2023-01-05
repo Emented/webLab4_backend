@@ -1,8 +1,8 @@
 package com.emented.weblab4.service.user;
 
 import com.emented.weblab4.DAO.User;
-import jakarta.mail.MessagingException;
 
+import javax.mail.MessagingException;
 import java.io.UnsupportedEncodingException;
 
 public interface EmailSenderService {

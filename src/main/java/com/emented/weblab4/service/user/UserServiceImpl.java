@@ -10,7 +10,6 @@ import com.emented.weblab4.sequrity.service.JwtTokenUtil;
 import com.emented.weblab4.sequrity.service.JwtTokenUtilImpl;
 import com.emented.weblab4.sequrity.service.JwtUserDetailsService;
 import com.emented.weblab4.util.RandomKeyGen;
-import jakarta.mail.MessagingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,6 +20,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.mail.MessagingException;
 import java.io.UnsupportedEncodingException;
 import java.util.Optional;
 

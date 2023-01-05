@@ -11,18 +11,14 @@ import com.emented.weblab4.jooq.tables.records.HitsRecord;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Function;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
-import org.jooq.Function8;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Records;
 import org.jooq.Row8;
 import org.jooq.Schema;
-import org.jooq.SelectField;
 import org.jooq.Table;
 import org.jooq.TableField;
 import org.jooq.TableOptions;
@@ -128,7 +124,7 @@ public class Hits extends TableImpl<HitsRecord> {
 
     @Override
     public Schema getSchema() {
-        return aliased() ? null : S336189.S336189;
+        return S336189.S336189;
     }
 
     @Override
@@ -142,15 +138,17 @@ public class Hits extends TableImpl<HitsRecord> {
     }
 
     @Override
+    public List<UniqueKey<HitsRecord>> getKeys() {
+        return Arrays.<UniqueKey<HitsRecord>>asList(Keys.HITS_PKEY);
+    }
+
+    @Override
     public List<ForeignKey<HitsRecord, ?>> getReferences() {
-        return Arrays.asList(Keys.HITS__FK_USER);
+        return Arrays.<ForeignKey<HitsRecord, ?>>asList(Keys.HITS__FK_USER);
     }
 
     private transient Users _users;
 
-    /**
-     * Get the implicit join path to the <code>s336189.users</code> table.
-     */
     public Users users() {
         if (_users == null)
             _users = new Users(this, Keys.HITS__FK_USER);
@@ -166,11 +164,6 @@ public class Hits extends TableImpl<HitsRecord> {
     @Override
     public Hits as(Name alias) {
         return new Hits(alias, this);
-    }
-
-    @Override
-    public Hits as(Table<?> alias) {
-        return new Hits(alias.getQualifiedName(), this);
     }
 
     /**
@@ -189,14 +182,6 @@ public class Hits extends TableImpl<HitsRecord> {
         return new Hits(name, null);
     }
 
-    /**
-     * Rename this table
-     */
-    @Override
-    public Hits rename(Table<?> name) {
-        return new Hits(name.getQualifiedName(), null);
-    }
-
     // -------------------------------------------------------------------------
     // Row8 type methods
     // -------------------------------------------------------------------------
@@ -204,20 +189,5 @@ public class Hits extends TableImpl<HitsRecord> {
     @Override
     public Row8<Integer, Integer, Double, Double, Double, OffsetDateTime, Long, Boolean> fieldsRow() {
         return (Row8) super.fieldsRow();
-    }
-
-    /**
-     * Convenience mapping calling {@link SelectField#convertFrom(Function)}.
-     */
-    public <U> SelectField<U> mapping(Function8<? super Integer, ? super Integer, ? super Double, ? super Double, ? super Double, ? super OffsetDateTime, ? super Long, ? super Boolean, ? extends U> from) {
-        return convertFrom(Records.mapping(from));
-    }
-
-    /**
-     * Convenience mapping calling {@link SelectField#convertFrom(Class,
-     * Function)}.
-     */
-    public <U> SelectField<U> mapping(Class<U> toType, Function8<? super Integer, ? super Integer, ? super Double, ? super Double, ? super Double, ? super OffsetDateTime, ? super Long, ? super Boolean, ? extends U> from) {
-        return convertFrom(toType, Records.mapping(from));
     }
 }
