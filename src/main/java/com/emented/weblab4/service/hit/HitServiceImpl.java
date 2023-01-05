@@ -45,7 +45,7 @@ public class HitServiceImpl implements HitService {
         }
 
         hitCheck.setStatus(hitCheckResult);
-        hitCheck.setExecutionTime(System.currentTimeMillis() - hitCheck.getCheckDate().toEpochMilli());
+        hitCheck.setExecutionTime((Instant.now().getNano() - hitCheck.getCheckDate().getNano()) / 1000L);
 
         hitCheckRepository.saveHitCheck(hitCheck);
     }
