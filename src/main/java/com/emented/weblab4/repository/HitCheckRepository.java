@@ -1,6 +1,6 @@
 package com.emented.weblab4.repository;
 
-import com.emented.weblab4.DAO.HitCheck;
+import com.emented.weblab4.model.HitCheck;
 
 import java.util.List;
 

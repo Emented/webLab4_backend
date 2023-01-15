@@ -25,8 +25,8 @@ public class AuthApiController {
     }
 
     @PostMapping("/register")
-    private ResponseEntity<SuccessMessageDTO> registerUser(@RequestBody @NotNull @Valid UserCredentialsDTO userCredentialsDTO,
-                                                           HttpServletRequest servletRequest) {
+    protected ResponseEntity<SuccessMessageDTO> registerUser(@RequestBody @NotNull @Valid UserCredentialsDTO userCredentialsDTO,
+                                                             HttpServletRequest servletRequest) {
         String url = servletRequest
                 .getRequestURL()
                 .toString()
@@ -38,14 +38,14 @@ public class AuthApiController {
     }
 
     @PostMapping("/login")
-    private ResponseEntity<JwtResponseDTO> loginUser(@RequestBody @NotNull @Valid UserCredentialsDTO userCredentialsDTO) {
+    protected ResponseEntity<JwtResponseDTO> loginUser(@RequestBody @NotNull @Valid UserCredentialsDTO userCredentialsDTO) {
         JwtResponseDTO jwtResponseDTO = userService.loginUser(userCredentialsDTO);
 
         return ResponseEntity.ok().body(jwtResponseDTO);
     }
 
     @PostMapping("/logout")
-    private ResponseEntity<SuccessMessageDTO> logoutUser(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    protected ResponseEntity<SuccessMessageDTO> logoutUser(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         userService.logoutUser(userDetails.getUserId());
 
         SuccessMessageDTO successMessageDTO = new SuccessMessageDTO("Logout successful!");
@@ -53,7 +53,7 @@ public class AuthApiController {
     }
 
     @PostMapping("/refresh")
-    private ResponseEntity<JwtResponseDTO> refreshUser(@RequestBody @Valid RefreshTokenDTO refreshTokenDTO) {
+    protected ResponseEntity<JwtResponseDTO> refreshUser(@RequestBody @Valid RefreshTokenDTO refreshTokenDTO) {
 
         JwtResponseDTO jwtResponseDTO = userService.refreshUser(refreshTokenDTO.getRefreshToken());
 
@@ -61,7 +61,7 @@ public class AuthApiController {
     }
 
     @GetMapping("/verify")
-    private ResponseEntity<VerifyMessageDTO> verifyUser(@RequestParam("verification_code") String verificationCode) {
+    protected ResponseEntity<VerifyMessageDTO> verifyUser(@RequestParam("verification_code") String verificationCode) {
         userService.verifyUser(verificationCode);
 
         VerifyMessageDTO verifyMessageDTO = new VerifyMessageDTO("Verification successful! You can login now!");

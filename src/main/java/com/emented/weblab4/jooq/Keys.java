@@ -5,10 +5,13 @@ package com.emented.weblab4.jooq;
 
 
 import com.emented.weblab4.jooq.tables.Hits;
+import com.emented.weblab4.jooq.tables.Roles;
+import com.emented.weblab4.jooq.tables.RolesUsersRelation;
 import com.emented.weblab4.jooq.tables.Users;
 import com.emented.weblab4.jooq.tables.records.HitsRecord;
+import com.emented.weblab4.jooq.tables.records.RolesRecord;
+import com.emented.weblab4.jooq.tables.records.RolesUsersRelationRecord;
 import com.emented.weblab4.jooq.tables.records.UsersRecord;
-
 import org.jooq.ForeignKey;
 import org.jooq.TableField;
 import org.jooq.UniqueKey;
@@ -17,23 +20,28 @@ import org.jooq.impl.Internal;
 
 
 /**
- * A class modelling foreign key relationships and constraints of tables in 
+ * A class modelling foreign key relationships and constraints of tables in
  * s336189.
  */
-@SuppressWarnings({ "all", "unchecked", "rawtypes" })
+@SuppressWarnings({"all", "unchecked", "rawtypes"})
 public class Keys {
 
     // -------------------------------------------------------------------------
     // UNIQUE and PRIMARY KEY definitions
     // -------------------------------------------------------------------------
 
-    public static final UniqueKey<HitsRecord> HITS_PKEY = Internal.createUniqueKey(Hits.HITS, DSL.name("hits_pkey"), new TableField[] { Hits.HITS.ID }, true);
-    public static final UniqueKey<UsersRecord> USERS_EMAIL_KEY = Internal.createUniqueKey(Users.USERS, DSL.name("users_email_key"), new TableField[] { Users.USERS.EMAIL }, true);
-    public static final UniqueKey<UsersRecord> USERS_PKEY = Internal.createUniqueKey(Users.USERS, DSL.name("users_pkey"), new TableField[] { Users.USERS.ID }, true);
+    public static final UniqueKey<HitsRecord> HITS_PKEY = Internal.createUniqueKey(Hits.HITS, DSL.name("hits_pkey"), new TableField[]{Hits.HITS.ID}, true);
+    public static final UniqueKey<RolesRecord> ROLES_NAME_KEY = Internal.createUniqueKey(Roles.ROLES, DSL.name("roles_name_key"), new TableField[]{Roles.ROLES.NAME}, true);
+    public static final UniqueKey<RolesRecord> ROLES_PKEY = Internal.createUniqueKey(Roles.ROLES, DSL.name("roles_pkey"), new TableField[]{Roles.ROLES.ID}, true);
+    public static final UniqueKey<RolesUsersRelationRecord> ROLES_USERS_RELATION_USER_ID_ROLE_ID_KEY = Internal.createUniqueKey(RolesUsersRelation.ROLES_USERS_RELATION, DSL.name("roles_users_relation_user_id_role_id_key"), new TableField[]{RolesUsersRelation.ROLES_USERS_RELATION.USER_ID, RolesUsersRelation.ROLES_USERS_RELATION.ROLE_ID}, true);
+    public static final UniqueKey<UsersRecord> USERS_EMAIL_KEY = Internal.createUniqueKey(Users.USERS, DSL.name("users_email_key"), new TableField[]{Users.USERS.EMAIL}, true);
+    public static final UniqueKey<UsersRecord> USERS_PKEY = Internal.createUniqueKey(Users.USERS, DSL.name("users_pkey"), new TableField[]{Users.USERS.ID}, true);
 
     // -------------------------------------------------------------------------
     // FOREIGN KEY definitions
     // -------------------------------------------------------------------------
 
-    public static final ForeignKey<HitsRecord, UsersRecord> HITS__FK_USER = Internal.createForeignKey(Hits.HITS, DSL.name("fk_user"), new TableField[] { Hits.HITS.USER_ID }, Keys.USERS_PKEY, new TableField[] { Users.USERS.ID }, true);
+    public static final ForeignKey<HitsRecord, UsersRecord> HITS__FK_USER = Internal.createForeignKey(Hits.HITS, DSL.name("fk_user"), new TableField[]{Hits.HITS.USER_ID}, Keys.USERS_PKEY, new TableField[]{Users.USERS.ID}, true);
+    public static final ForeignKey<RolesUsersRelationRecord, RolesRecord> ROLES_USERS_RELATION__FK_ROLES_USERS_RELATION_ROLE_ID = Internal.createForeignKey(RolesUsersRelation.ROLES_USERS_RELATION, DSL.name("fk_roles_users_relation_role_id"), new TableField[]{RolesUsersRelation.ROLES_USERS_RELATION.ROLE_ID}, Keys.ROLES_PKEY, new TableField[]{Roles.ROLES.ID}, true);
+    public static final ForeignKey<RolesUsersRelationRecord, UsersRecord> ROLES_USERS_RELATION__FK_ROLES_USERS_RELATION_USER_ID = Internal.createForeignKey(RolesUsersRelation.ROLES_USERS_RELATION, DSL.name("fk_roles_users_relation_user_id"), new TableField[]{RolesUsersRelation.ROLES_USERS_RELATION.USER_ID}, Keys.USERS_PKEY, new TableField[]{Users.USERS.ID}, true);
 }

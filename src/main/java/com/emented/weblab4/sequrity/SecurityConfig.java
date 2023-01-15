@@ -73,7 +73,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .antMatchers("/api/v1/auth/login",
                                 "/api/v1/auth/register",
-                                "/api/v1/auth/verify",
+                                "/api/v1/auth/verify*",
                                 "/api/v1/auth/refresh",
                                 "/ping",
                                 "/v3/api-docs/**",

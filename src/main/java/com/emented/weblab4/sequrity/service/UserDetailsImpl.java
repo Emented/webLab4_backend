@@ -1,6 +1,6 @@
 package com.emented.weblab4.sequrity.service;
 
-import com.emented.weblab4.DAO.User;
+import com.emented.weblab4.model.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 

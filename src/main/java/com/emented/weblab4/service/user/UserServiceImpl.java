@@ -1,10 +1,10 @@
 package com.emented.weblab4.service.user;
 
 
-import com.emented.weblab4.DAO.User;
 import com.emented.weblab4.DTO.JwtResponseDTO;
 import com.emented.weblab4.DTO.UserCredentialsDTO;
 import com.emented.weblab4.exception.*;
+import com.emented.weblab4.model.User;
 import com.emented.weblab4.repository.UserRepository;
 import com.emented.weblab4.sequrity.service.JwtTokenUtil;
 import com.emented.weblab4.sequrity.service.JwtTokenUtilImpl;
@@ -65,6 +65,7 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(userCredentialsDTO.getPassword()));
         user.setVerificationCode(randomCode);
         user.setEnabled(false);
+        user.setRoles(userCredentialsDTO.getRoles());
 
         try {
             Integer id = userRepository.saveUser(user);

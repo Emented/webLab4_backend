@@ -1,4 +1,4 @@
-package com.emented.weblab4.DAO;
+package com.emented.weblab4.model;
 
 import lombok.Data;
 

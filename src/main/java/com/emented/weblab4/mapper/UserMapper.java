@@ -1,7 +1,7 @@
 package com.emented.weblab4.mapper;
 
-import com.emented.weblab4.DAO.User;
 import com.emented.weblab4.jooq.tables.records.UsersRecord;
+import com.emented.weblab4.model.User;
 import org.jooq.RecordMapper;
 import org.jooq.RecordUnmapper;
 import org.jooq.exception.MappingException;

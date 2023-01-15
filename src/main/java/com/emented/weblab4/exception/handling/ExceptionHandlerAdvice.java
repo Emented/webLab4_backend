@@ -5,6 +5,7 @@ import com.emented.weblab4.DTO.ErrorDTO;
 import com.emented.weblab4.exception.InvalidRefreshTokenException;
 import com.emented.weblab4.exception.UserAlreadyExistsException;
 import com.emented.weblab4.exception.UserDoesNotExistException;
+import com.emented.weblab4.exception.UserDoesntHaveRoleException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -50,19 +51,25 @@ public class ExceptionHandlerAdvice {
     @ExceptionHandler(value = UserAlreadyExistsException.class)
     private ResponseEntity<ErrorDTO> handleUserAlreadyExistsException(UserAlreadyExistsException e) {
         ErrorDTO errorDTO = new ErrorDTO("User already exists!");
-        return new ResponseEntity<>(errorDTO, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(errorDTO, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(value = UserDoesNotExistException.class)
     private ResponseEntity<ErrorDTO> handleUserDoesNotExistException(UserDoesNotExistException e) {
         ErrorDTO errorDTO = new ErrorDTO("User is already verified or code is wrong!");
-        return new ResponseEntity<>(errorDTO, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(errorDTO, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(value = InvalidRefreshTokenException.class)
     private ResponseEntity<ErrorDTO> handleInvalidRefreshTokenException(InvalidRefreshTokenException e) {
         ErrorDTO errorDTO = new ErrorDTO(e.getMessage());
-        return new ResponseEntity<>(errorDTO, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(errorDTO, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(value = UserDoesntHaveRoleException.class)
+    private ResponseEntity<ErrorDTO> handleUserDoesntHaveRoleException(UserDoesntHaveRoleException e) {
+        ErrorDTO errorDTO = new ErrorDTO(e.getMessage());
+        return new ResponseEntity<>(errorDTO, HttpStatus.FORBIDDEN);
     }
 
 

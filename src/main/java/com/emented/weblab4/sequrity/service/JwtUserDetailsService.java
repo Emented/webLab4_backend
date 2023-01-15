@@ -1,6 +1,6 @@
 package com.emented.weblab4.sequrity.service;
 
-import com.emented.weblab4.DAO.User;
+import com.emented.weblab4.model.User;
 import com.emented.weblab4.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;

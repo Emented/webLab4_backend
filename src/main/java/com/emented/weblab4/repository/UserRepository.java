@@ -1,6 +1,6 @@
 package com.emented.weblab4.repository;
 
-import com.emented.weblab4.DAO.User;
+import com.emented.weblab4.model.User;
 
 import java.util.Optional;
 

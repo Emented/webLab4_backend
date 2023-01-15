@@ -1,17 +1,26 @@
 package com.emented.weblab4.repository;
 
 
-import com.emented.weblab4.DAO.User;
-import com.emented.weblab4.jooq.Tables;
+import com.emented.weblab4.jooq.tables.records.UsersRecord;
 import com.emented.weblab4.mapper.UserMapper;
+import com.emented.weblab4.model.Role;
+import com.emented.weblab4.model.User;
 import org.jooq.DSLContext;
+import org.jooq.Records;
+import org.jooq.TableField;
 import org.jooq.exception.DataAccessException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-@Service
+import static com.emented.weblab4.jooq.Tables.*;
+import static org.jooq.impl.DSL.multiset;
+import static org.jooq.impl.DSL.select;
+
+
+@Repository
 public class UserRepositoryImpl implements UserRepository {
 
     private final DSLContext dslContext;
@@ -24,42 +33,99 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
+    @Transactional
     public Optional<User> findUserByEmail(String email) {
-        return dslContext.selectFrom(Tables.USERS)
-                .where(Tables.USERS.EMAIL.eq(email))
-                .fetchOptional(userMapper);
+
+        return findByField(email, USERS.EMAIL);
+
     }
 
     @Override
+    @Transactional
     public Optional<User> findUserByVerificationCode(String verificationCode) {
-        return dslContext.selectFrom(Tables.USERS)
-                .where(Tables.USERS.VERIFICATION_CODE.eq(verificationCode))
-                .fetchOptional(userMapper);
+
+        return findByField(verificationCode, USERS.VERIFICATION_CODE);
+
+    }
+
+    private <T> Optional<User> findByField(T value, TableField<UsersRecord, T> field) {
+
+        return dslContext.select(USERS.ID,
+                        USERS.EMAIL,
+                        USERS.PASSWORD,
+                        USERS.VERIFICATION_CODE,
+                        USERS.ENABLED,
+                        multiset(
+                                select(ROLES.ID, ROLES.NAME)
+                                        .from(ROLES)
+                                        .innerJoin(ROLES_USERS_RELATION)
+                                        .on(ROLES_USERS_RELATION.ROLE_ID.eq(ROLES.ID))
+                                        .where(ROLES_USERS_RELATION.USER_ID.eq(USERS.ID))
+                        ).convertFrom(record -> record.map(Records.mapping(Role::new)))
+                )
+                .from(USERS)
+                .where(field.eq(value))
+                .fetchOptional(Records.mapping(User::new));
+
     }
 
     @Override
+    @Transactional
     public Integer saveUser(User user) {
-        return dslContext.insertInto(Tables.USERS)
+        Integer newUserID = dslContext.insertInto(USERS)
                 .set(userMapper.unmap(user))
-                .returning(Tables.USERS.ID)
+                .returning(USERS.ID)
                 .fetchOptional()
                 .orElseThrow(() -> new DataAccessException("Troubles during insert"))
-                .get(Tables.USERS.ID);
+                .get(USERS.ID);
+
+        for (Role role : user.getRoles()) {
+            dslContext.insertInto(ROLES_USERS_RELATION, ROLES_USERS_RELATION.ROLE_ID, ROLES_USERS_RELATION.USER_ID)
+                    .values(dslContext.select(ROLES.ID)
+                            .from(ROLES)
+                            .where(ROLES.NAME.eq(role.getName()))
+                            .fetchOptional()
+                            .orElseThrow(() -> new DataAccessException("Troubles during insert"))
+                            .get(ROLES.ID), newUserID)
+                    .execute();
+        }
+
+        return newUserID;
     }
 
     @Override
+    @Transactional
     public void deleteUserById(Integer id) {
-        dslContext.deleteFrom(Tables.USERS)
-                .where(Tables.USERS.ID.eq(id))
+        dslContext.deleteFrom(ROLES_USERS_RELATION)
+                .where(ROLES_USERS_RELATION.USER_ID.eq(id))
+                .execute();
+
+        dslContext.deleteFrom(USERS)
+                .where(USERS.ID.eq(id))
                 .execute();
     }
 
     @Override
+    @Transactional
     public void updateUser(User user) {
-        dslContext.update(Tables.USERS)
+
+        for (Role role : user.getRoles()) {
+            dslContext.insertInto(ROLES_USERS_RELATION, ROLES_USERS_RELATION.ROLE_ID, ROLES_USERS_RELATION.USER_ID)
+                    .values(role.getId() == null ? dslContext.select(ROLES.ID)
+                            .from(ROLES)
+                            .where(ROLES.NAME.eq(role.getName()))
+                            .fetchOptional()
+                            .orElseThrow(() -> new DataAccessException("Troubles during insert"))
+                            .get(ROLES.ID) : role.getId(), user.getId())
+                    .onConflictDoNothing()
+                    .execute();
+        }
+
+        dslContext.update(USERS)
                 .set(userMapper.unmap(user))
-                .where(Tables.USERS.EMAIL.eq(user.getEmail()))
+                .where(USERS.EMAIL.eq(user.getEmail()))
                 .execute();
+
     }
 
 }

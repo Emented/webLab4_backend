@@ -5,19 +5,31 @@ package com.emented.weblab4.jooq;
 
 
 import com.emented.weblab4.jooq.tables.Hits;
+import com.emented.weblab4.jooq.tables.Roles;
+import com.emented.weblab4.jooq.tables.RolesUsersRelation;
 import com.emented.weblab4.jooq.tables.Users;
 
 
 /**
  * Convenience access to all tables in s336189.
  */
-@SuppressWarnings({ "all", "unchecked", "rawtypes" })
+@SuppressWarnings({"all", "unchecked", "rawtypes"})
 public class Tables {
 
     /**
      * The table <code>s336189.hits</code>.
      */
     public static final Hits HITS = Hits.HITS;
+
+    /**
+     * The table <code>s336189.roles</code>.
+     */
+    public static final Roles ROLES = Roles.ROLES;
+
+    /**
+     * The table <code>s336189.roles_users_relation</code>.
+     */
+    public static final RolesUsersRelation ROLES_USERS_RELATION = RolesUsersRelation.ROLES_USERS_RELATION;
 
     /**
      * The table <code>s336189.users</code>.

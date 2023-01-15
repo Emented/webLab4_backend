@@ -1,8 +1,8 @@
 package com.emented.weblab4.converter;
 
 
-import com.emented.weblab4.DAO.HitCheck;
 import com.emented.weblab4.DTO.HitCheckDTO;
+import com.emented.weblab4.model.HitCheck;
 import org.jooq.Converter;
 import org.springframework.stereotype.Component;
 

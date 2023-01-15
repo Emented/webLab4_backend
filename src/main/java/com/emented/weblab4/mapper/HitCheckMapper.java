@@ -1,7 +1,7 @@
 package com.emented.weblab4.mapper;
 
-import com.emented.weblab4.DAO.HitCheck;
 import com.emented.weblab4.jooq.tables.records.HitsRecord;
+import com.emented.weblab4.model.HitCheck;
 import org.jooq.RecordMapper;
 import org.jooq.RecordUnmapper;
 import org.jooq.exception.MappingException;

@@ -1,8 +1,8 @@
 package com.emented.weblab4.repository;
 
-import com.emented.weblab4.DAO.HitCheck;
 import com.emented.weblab4.jooq.Tables;
 import com.emented.weblab4.mapper.HitCheckMapper;
+import com.emented.weblab4.model.HitCheck;
 import org.jooq.DSLContext;
 import org.jooq.exception.DataAccessException;
 import org.springframework.beans.factory.annotation.Autowired;

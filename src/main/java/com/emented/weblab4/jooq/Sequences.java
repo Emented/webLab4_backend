@@ -12,13 +12,18 @@ import org.jooq.impl.SQLDataType;
 /**
  * Convenience access to all sequences in s336189.
  */
-@SuppressWarnings({ "all", "unchecked", "rawtypes" })
+@SuppressWarnings({"all", "unchecked", "rawtypes"})
 public class Sequences {
 
     /**
      * The sequence <code>s336189.hits_id_seq</code>
      */
     public static final Sequence<Integer> HITS_ID_SEQ = Internal.createSequence("hits_id_seq", S336189.S336189, SQLDataType.INTEGER.nullable(false), null, null, null, null, false, null);
+
+    /**
+     * The sequence <code>s336189.roles_id_seq</code>
+     */
+    public static final Sequence<Integer> ROLES_ID_SEQ = Internal.createSequence("roles_id_seq", S336189.S336189, SQLDataType.INTEGER.nullable(false), null, null, null, null, false, null);
 
     /**
      * The sequence <code>s336189.users_id_seq</code>
