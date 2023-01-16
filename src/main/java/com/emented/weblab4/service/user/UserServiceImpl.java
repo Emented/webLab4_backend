@@ -8,7 +8,6 @@ import com.emented.weblab4.model.User;
 import com.emented.weblab4.repository.UserRepository;
 import com.emented.weblab4.sequrity.service.JwtTokenUtil;
 import com.emented.weblab4.sequrity.service.JwtTokenUtilImpl;
-import com.emented.weblab4.sequrity.service.JwtUserDetailsService;
 import com.emented.weblab4.sequrity.service.UserDetailsImpl;
 import com.emented.weblab4.util.RandomKeyGen;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +33,6 @@ public class UserServiceImpl implements UserService {
     private final RandomKeyGen randomKeyGen;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenUtil jwtTokenUtil;
-    private final JwtUserDetailsService jwtUserDetailsService;
     private final EmailSenderService emailSenderService;
 
     @Value("${key.size}")
@@ -45,14 +44,12 @@ public class UserServiceImpl implements UserService {
                            RandomKeyGen randomKeyGen,
                            AuthenticationManager authenticationManager,
                            JwtTokenUtilImpl jwtTokenUtil,
-                           JwtUserDetailsService jwtUserDetailsService,
                            EmailSenderService emailSenderService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.randomKeyGen = randomKeyGen;
         this.authenticationManager = authenticationManager;
         this.jwtTokenUtil = jwtTokenUtil;
-        this.jwtUserDetailsService = jwtUserDetailsService;
         this.emailSenderService = emailSenderService;
     }
 
@@ -88,11 +85,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public JwtResponseDTO loginUser(UserCredentialsDTO userCredentialsDTO) {
-        authenticationManager.authenticate(
+        Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(userCredentialsDTO.getEmail(),
                         userCredentialsDTO.getPassword()));
 
-        UserDetailsImpl userDetails = (UserDetailsImpl) jwtUserDetailsService.loadUserByUsername(userCredentialsDTO.getEmail());
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
         Integer userId = userDetails.getUserId();
         String accessToken = jwtTokenUtil.generateAccessToken(userDetails.getUserId());
