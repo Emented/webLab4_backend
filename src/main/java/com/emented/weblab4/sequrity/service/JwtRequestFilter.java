@@ -1,13 +1,12 @@
 package com.emented.weblab4.sequrity.service;
 
 
+import com.emented.weblab4.sequrity.jwt.BearerToken;
+import com.emented.weblab4.sequrity.jwt.BearerUser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -26,12 +25,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     private final static String TOKEN_PREFIX = "Bearer ";
 
     private final JwtTokenUtil jwtTokenUtil;
-    private final JwtUserDetailsService jwtUserDetailsService;
 
-    public JwtRequestFilter(JwtTokenUtilImpl jwtTokenUtil,
-                            JwtUserDetailsService jwtUserDetailsService) {
+    public JwtRequestFilter(JwtTokenUtilImpl jwtTokenUtil) {
         this.jwtTokenUtil = jwtTokenUtil;
-        this.jwtUserDetailsService = jwtUserDetailsService;
     }
 
     private static Optional<String> getTokenHeader(HttpServletRequest request) {
@@ -51,8 +47,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         Optional<String> requestTokenHeaderOptional = getTokenHeader(request);
 
-        String username;
-
         if (requestTokenHeaderOptional.isPresent()) {
 
             try {
@@ -61,22 +55,15 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
                 if (jwtTokenUtil.validateAccessToken(requestTokenHeader)) {
 
-                    username = jwtTokenUtil.getUsernameFromAccessToken(requestTokenHeader);
+                    Integer userId = jwtTokenUtil.getUserIdFromAccessToken(requestTokenHeader);
 
-                    if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                    if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-                        UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(username);
+                        BearerToken bearerToken = new BearerToken(new BearerUser(userId));
 
-                        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-                                new UsernamePasswordAuthenticationToken(
-                                        userDetails,
-                                        null,
-                                        userDetails.getAuthorities());
-                        usernamePasswordAuthenticationToken
-                                .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                         SecurityContextHolder
                                 .getContext()
-                                .setAuthentication(usernamePasswordAuthenticationToken);
+                                .setAuthentication(bearerToken);
                     }
                 }
             } catch (UsernameNotFoundException e) {

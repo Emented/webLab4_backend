@@ -4,6 +4,7 @@ import com.emented.weblab4.exception.UserDoesntHaveRoleException;
 import com.emented.weblab4.model.Role;
 import com.emented.weblab4.model.User;
 import com.emented.weblab4.repository.UserRepository;
+import com.emented.weblab4.sequrity.jwt.BearerUser;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -11,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.cglib.proxy.Enhancer;
 import org.springframework.cglib.proxy.MethodInterceptor;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RestController;
@@ -81,17 +81,17 @@ public class HasRoleBeanPostProcessor implements BeanPostProcessor {
 
                 log.info("Started proxy for method: {}", method.getName());
 
-                UserDetails userDetails = null;
+                BearerUser bearerUser = null;
                 for (Object arg : args) {
-                    if (UserDetails.class.isAssignableFrom(arg.getClass())) {
-                        log.info("Found user details for method: {}", method.getName());
-                        userDetails = (UserDetails) arg;
+                    if (BearerUser.class.isAssignableFrom(arg.getClass())) {
+                        log.info("Found bearer user for method: {}", method.getName());
+                        bearerUser = (BearerUser) arg;
                         break;
                     }
                 }
-                if (userDetails != null) {
+                if (bearerUser != null) {
                     log.info("Trying to find user for method: {}", method.getName());
-                    Optional<User> userOptional = userRepository.findUserByEmail(userDetails.getUsername());
+                    Optional<User> userOptional = userRepository.findUserById(bearerUser.getUserId());
 
                     if (userOptional.isPresent()) {
 
@@ -109,7 +109,7 @@ public class HasRoleBeanPostProcessor implements BeanPostProcessor {
                         throw new UserDoesntHaveRoleException("User with email: " + user.getEmail() + " doesn't have access to this method!");
                     }
                 }
-                log.info("User details not found for method: {}", method.getName());
+                log.info("Bearer user not found for method: {}", method.getName());
                 return proxy.invokeSuper(obj, args);
             });
 

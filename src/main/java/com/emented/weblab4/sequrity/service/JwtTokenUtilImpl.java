@@ -23,19 +23,19 @@ public class JwtTokenUtilImpl implements Serializable, JwtTokenUtil {
     private Integer refreshTokenValidity;
 
     @Override
-    public String generateAccessToken(String username) {
-        return generateToken(username, accessTokenSecret, accessTokenValidity);
+    public String generateAccessToken(Integer userId) {
+        return generateToken(userId, accessTokenSecret, accessTokenValidity);
     }
 
     @Override
-    public String generateRefreshToken(String username) {
-        return generateToken(username, refreshTokenSecret, refreshTokenValidity);
+    public String generateRefreshToken(Integer userId) {
+        return generateToken(userId, refreshTokenSecret, refreshTokenValidity);
     }
 
-    private String generateToken(String username, String secret, Integer validity) {
+    private String generateToken(Integer userId, String secret, Integer validity) {
         Date currentDate = new Date();
         return Jwts.builder()
-                .setSubject(username)
+                .setSubject(String.valueOf(userId))
                 .setIssuedAt(currentDate)
                 .setExpiration(new Date(currentDate.getTime() + validity))
                 .signWith(SignatureAlgorithm.HS512, secret)
@@ -43,21 +43,22 @@ public class JwtTokenUtilImpl implements Serializable, JwtTokenUtil {
     }
 
     @Override
-    public String getUsernameFromAccessToken(String token) {
-        return getUsernameFromToken(token, accessTokenSecret);
+    public Integer getUserIdFromAccessToken(String token) {
+        return getUserIdFromToken(token, accessTokenSecret);
     }
 
     @Override
-    public String getUsernameFromRefreshToken(String token) {
-        return getUsernameFromToken(token, refreshTokenSecret);
+    public Integer getUserIdFromRefreshToken(String token) {
+        return getUserIdFromToken(token, refreshTokenSecret);
     }
 
-    private String getUsernameFromToken(String token, String secret) {
-        return Jwts.parser()
-                .setSigningKey(secret)
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+    private Integer getUserIdFromToken(String token, String secret) {
+        return Integer.parseInt(
+                Jwts.parser()
+                        .setSigningKey(secret)
+                        .parseClaimsJws(token)
+                        .getBody()
+                        .getSubject());
     }
 
     @Override

@@ -3,7 +3,7 @@ package com.emented.weblab4.controller;
 import com.emented.weblab4.DTO.HitCheckDTO;
 import com.emented.weblab4.DTO.SuccessMessageDTO;
 import com.emented.weblab4.role.HasRole;
-import com.emented.weblab4.sequrity.service.UserDetailsImpl;
+import com.emented.weblab4.sequrity.jwt.BearerUser;
 import com.emented.weblab4.service.hit.HitService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -28,41 +28,33 @@ public class HitApiController {
     @HasRole("DIRECTOR_ROLE")
     @PostMapping("/hits")
     protected ResponseEntity<SuccessMessageDTO> checkHit(@RequestBody @NotNull @Valid HitCheckDTO hitCheckDTO,
-                                                         @AuthenticationPrincipal UserDetailsImpl userDetails) {
+                                                         @AuthenticationPrincipal BearerUser bearerUser) {
 
-        hitService.checkHit(hitCheckDTO, userDetails.getUserId());
+        hitService.checkHit(hitCheckDTO, bearerUser.getUserId());
 
         SuccessMessageDTO successMessageDTO = new SuccessMessageDTO("Hit check successful!");
         return ResponseEntity.ok().body(successMessageDTO);
     }
 
     @DeleteMapping("/hits")
-    protected ResponseEntity<SuccessMessageDTO> deleteHits(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    protected ResponseEntity<SuccessMessageDTO> deleteHits(@AuthenticationPrincipal BearerUser bearerUser) {
 
-        hitService.deleteHits(userDetails.getUserId());
+        hitService.deleteHits(bearerUser.getUserId());
 
         SuccessMessageDTO successMessageDTO = new SuccessMessageDTO("Delete hit checks successful!");
         return ResponseEntity.ok().body(successMessageDTO);
     }
 
     @GetMapping("/hits")
-    protected ResponseEntity<List<HitCheckDTO>> getHits(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        List<HitCheckDTO> result = hitService.getAllHitsForUser(userDetails.getUserId());
-
-        return ResponseEntity.ok().body(result);
-    }
-
-    @GetMapping("/hits")
     protected ResponseEntity<List<HitCheckDTO>> getHitsByR(@RequestParam Double radius,
-                                                           @AuthenticationPrincipal UserDetailsImpl userDetails) {
+                                                           @AuthenticationPrincipal BearerUser bearerUser) {
         List<HitCheckDTO> result;
 
         if (radius == null) {
-            result = hitService.getAllHitsForUser(userDetails.getUserId());
+            result = hitService.getAllHitsForUser(bearerUser.getUserId());
         } else {
-            result = hitService.getHitsForUserByRadius(userDetails.getUserId(), radius);
+            result = hitService.getHitsForUserByRadius(bearerUser.getUserId(), radius);
         }
-
 
 
         return ResponseEntity.ok().body(result);

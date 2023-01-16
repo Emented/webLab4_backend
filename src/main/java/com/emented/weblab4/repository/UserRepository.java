@@ -10,6 +10,8 @@ public interface UserRepository {
 
     Optional<User> findUserByVerificationCode(String verificationCode);
 
+    Optional<User> findUserById(Integer userId);
+
     Integer saveUser(User user);
 
     void deleteUserById(Integer id);

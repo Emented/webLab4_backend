@@ -48,6 +48,14 @@ public class UserRepositoryImpl implements UserRepository {
 
     }
 
+    @Override
+    @Transactional
+    public Optional<User> findUserById(Integer userId) {
+
+        return findByField(userId, USERS.ID);
+
+    }
+
     private <T> Optional<User> findByField(T value, TableField<UsersRecord, T> field) {
 
         return dslContext.select(USERS.ID,

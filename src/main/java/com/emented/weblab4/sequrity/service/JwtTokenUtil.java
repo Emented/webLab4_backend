@@ -2,13 +2,13 @@ package com.emented.weblab4.sequrity.service;
 
 public interface JwtTokenUtil {
 
-    String generateAccessToken(String username);
+    String generateAccessToken(Integer userId);
 
-    String generateRefreshToken(String username);
+    String generateRefreshToken(Integer userId);
 
-    String getUsernameFromAccessToken(String token);
+    Integer getUserIdFromAccessToken(String token);
 
-    String getUsernameFromRefreshToken(String token);
+    Integer getUserIdFromRefreshToken(String token);
 
     boolean validateAccessToken(String token);
 

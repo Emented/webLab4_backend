@@ -9,6 +9,7 @@ import com.emented.weblab4.repository.UserRepository;
 import com.emented.weblab4.sequrity.service.JwtTokenUtil;
 import com.emented.weblab4.sequrity.service.JwtTokenUtilImpl;
 import com.emented.weblab4.sequrity.service.JwtUserDetailsService;
+import com.emented.weblab4.sequrity.service.UserDetailsImpl;
 import com.emented.weblab4.util.RandomKeyGen;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -92,13 +92,13 @@ public class UserServiceImpl implements UserService {
                 new UsernamePasswordAuthenticationToken(userCredentialsDTO.getEmail(),
                         userCredentialsDTO.getPassword()));
 
-        UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(userCredentialsDTO.getEmail());
+        UserDetailsImpl userDetails = (UserDetailsImpl) jwtUserDetailsService.loadUserByUsername(userCredentialsDTO.getEmail());
 
-        String email = userDetails.getUsername();
-        String accessToken = jwtTokenUtil.generateAccessToken(email);
-        String refreshToken = jwtTokenUtil.generateRefreshToken(email);
+        Integer userId = userDetails.getUserId();
+        String accessToken = jwtTokenUtil.generateAccessToken(userDetails.getUserId());
+        String refreshToken = jwtTokenUtil.generateRefreshToken(userDetails.getUserId());
 
-        return new JwtResponseDTO(email, accessToken, refreshToken);
+        return new JwtResponseDTO(userId, accessToken, refreshToken);
 
     }
 
@@ -133,9 +133,9 @@ public class UserServiceImpl implements UserService {
             throw new InvalidRefreshTokenException("Invalid refresh token!");
         }
 
-        String username = jwtTokenUtil.getUsernameFromRefreshToken(refreshToken);
-        String accessToken = jwtTokenUtil.generateAccessToken(username);
+        Integer userId = jwtTokenUtil.getUserIdFromRefreshToken(refreshToken);
+        String accessToken = jwtTokenUtil.generateAccessToken(userId);
 
-        return new JwtResponseDTO(username, accessToken, refreshToken);
+        return new JwtResponseDTO(userId, accessToken, refreshToken);
     }
 }
