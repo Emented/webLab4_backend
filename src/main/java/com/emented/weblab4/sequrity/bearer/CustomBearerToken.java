@@ -1,16 +1,16 @@
-package com.emented.weblab4.sequrity.jwt;
+package com.emented.weblab4.sequrity.bearer;
 
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 
 import java.util.ArrayList;
 
-public class BearerToken extends AbstractAuthenticationToken {
+public class CustomBearerToken extends AbstractAuthenticationToken {
 
-    private final BearerUser bearerUser;
+    private final CustomBearerUser customBearerUser;
 
-    public BearerToken(BearerUser bearerUser) {
+    public CustomBearerToken(CustomBearerUser customBearerUser) {
         super(new ArrayList<>());
-        this.bearerUser = bearerUser;
+        this.customBearerUser = customBearerUser;
         setAuthenticated(true);
     }
 
@@ -21,6 +21,6 @@ public class BearerToken extends AbstractAuthenticationToken {
 
     @Override
     public Object getPrincipal() {
-        return bearerUser;
+        return customBearerUser;
     }
 }

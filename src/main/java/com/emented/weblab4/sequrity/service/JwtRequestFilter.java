@@ -1,8 +1,8 @@
 package com.emented.weblab4.sequrity.service;
 
 
-import com.emented.weblab4.sequrity.jwt.BearerToken;
-import com.emented.weblab4.sequrity.jwt.BearerUser;
+import com.emented.weblab4.sequrity.bearer.CustomBearerToken;
+import com.emented.weblab4.sequrity.bearer.CustomBearerUser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -59,11 +59,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
                     if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-                        BearerToken bearerToken = new BearerToken(new BearerUser(userId));
+                        CustomBearerToken customBearerToken = new CustomBearerToken(new CustomBearerUser(userId));
 
                         SecurityContextHolder
                                 .getContext()
-                                .setAuthentication(bearerToken);
+                                .setAuthentication(customBearerToken);
                     }
                 }
             } catch (UsernameNotFoundException e) {

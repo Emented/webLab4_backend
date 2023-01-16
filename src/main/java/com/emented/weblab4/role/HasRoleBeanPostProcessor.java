@@ -4,7 +4,7 @@ import com.emented.weblab4.exception.UserDoesntHaveRoleException;
 import com.emented.weblab4.model.Role;
 import com.emented.weblab4.model.User;
 import com.emented.weblab4.repository.UserRepository;
-import com.emented.weblab4.sequrity.jwt.BearerUser;
+import com.emented.weblab4.sequrity.bearer.CustomBearerUser;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -81,17 +81,17 @@ public class HasRoleBeanPostProcessor implements BeanPostProcessor {
 
                 log.info("Started proxy for method: {}", method.getName());
 
-                BearerUser bearerUser = null;
+                CustomBearerUser customBearerUser = null;
                 for (Object arg : args) {
-                    if (BearerUser.class.isAssignableFrom(arg.getClass())) {
+                    if (CustomBearerUser.class.isAssignableFrom(arg.getClass())) {
                         log.info("Found bearer user for method: {}", method.getName());
-                        bearerUser = (BearerUser) arg;
+                        customBearerUser = (CustomBearerUser) arg;
                         break;
                     }
                 }
-                if (bearerUser != null) {
+                if (customBearerUser != null) {
                     log.info("Trying to find user for method: {}", method.getName());
-                    Optional<User> userOptional = userRepository.findUserById(bearerUser.getUserId());
+                    Optional<User> userOptional = userRepository.findUserById(customBearerUser.getUserId());
 
                     if (userOptional.isPresent()) {
 

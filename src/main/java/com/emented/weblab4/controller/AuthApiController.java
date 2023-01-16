@@ -1,7 +1,7 @@
 package com.emented.weblab4.controller;
 
 import com.emented.weblab4.DTO.*;
-import com.emented.weblab4.sequrity.jwt.BearerUser;
+import com.emented.weblab4.sequrity.bearer.CustomBearerUser;
 import com.emented.weblab4.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -45,8 +45,8 @@ public class AuthApiController {
     }
 
     @PostMapping("/logout")
-    protected ResponseEntity<SuccessMessageDTO> logoutUser(@AuthenticationPrincipal BearerUser bearerUser) {
-        userService.logoutUser(bearerUser.getUserId());
+    protected ResponseEntity<SuccessMessageDTO> logoutUser(@AuthenticationPrincipal CustomBearerUser customBearerUser) {
+        userService.logoutUser(customBearerUser.getUserId());
 
         SuccessMessageDTO successMessageDTO = new SuccessMessageDTO("Logout successful!");
         return ResponseEntity.ok().body(successMessageDTO);
