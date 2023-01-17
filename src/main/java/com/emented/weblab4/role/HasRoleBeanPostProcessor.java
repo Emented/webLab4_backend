@@ -18,10 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -79,43 +76,46 @@ public class HasRoleBeanPostProcessor implements BeanPostProcessor {
 
             enhancer.setCallback((MethodInterceptor) (obj, method, args, proxy) -> {
 
-                log.info("Started proxy for method: {}", method.getName());
+                if (methodToAnnotaionValueMap.containsKey(method)) {
 
-                CustomBearerUser customBearerUser = null;
-                for (Object arg : args) {
-                    if (CustomBearerUser.class.isAssignableFrom(arg.getClass())) {
-                        log.info("Found bearer user for method: {}", method.getName());
-                        customBearerUser = (CustomBearerUser) arg;
-                        break;
-                    }
-                }
-                if (customBearerUser != null) {
-                    log.info("Trying to find user for method: {}", method.getName());
-                    Optional<User> userOptional = userRepository.findUserById(customBearerUser.getUserId());
+                    log.info("Started proxy for method: {}", method.getName());
 
-                    if (userOptional.isPresent()) {
-
-                        log.info("Found user for method: {}", method.getName());
-
-                        User user = userOptional.get();
-                        Set<String> userRoles = user.getRoles().stream().map(Role::getName).collect(Collectors.toSet());
-
-                        for (String role : methodToAnnotaionValueMap.get(method)) {
-                            if (userRoles.contains(role)) {
-                                return proxy.invokeSuper(obj, args);
-                            }
+                    CustomBearerUser customBearerUser = null;
+                    for (Object arg : args) {
+                        if (arg != null && CustomBearerUser.class.isAssignableFrom(arg.getClass())) {
+                            log.info("Found bearer user for method: {}", method.getName());
+                            customBearerUser = (CustomBearerUser) arg;
+                            break;
                         }
-
-                        throw new UserDoesntHaveRoleException("User with email: " + user.getEmail() + " doesn't have access to this method!");
                     }
+                    if (customBearerUser != null) {
+                        log.info("Trying to find user for method: {}", method.getName());
+                        Optional<User> userOptional = userRepository.findUserById(customBearerUser.getUserId());
+
+                        if (userOptional.isPresent()) {
+
+                            log.info("Found user for method: {}", method.getName());
+
+                            User user = userOptional.get();
+                            Set<String> userRoles = user.getRoles().stream().map(Role::getName).collect(Collectors.toSet());
+
+                            for (String role : methodToAnnotaionValueMap.get(method)) {
+                                if (userRoles.contains(role)) {
+                                    return proxy.invokeSuper(obj, args);
+                                }
+                            }
+
+                            throw new UserDoesntHaveRoleException("User with email: " + user.getEmail() + " doesn't have access to this method!");
+                        }
+                    }
+                    log.info("Bearer user not found for method: {}", method.getName());
                 }
-                log.info("Bearer user not found for method: {}", method.getName());
                 return proxy.invokeSuper(obj, args);
             });
 
             Field[] fields = bean.getClass().getDeclaredFields();
 
-            Class<?>[] argumentClasses = new Class[fields.length];
+            Class<?>[] argumentTypes = new Class[fields.length];
             Object[] arguments = new Object[fields.length];
 
             for (int i = 0; i < fields.length; i++) {
@@ -126,14 +126,14 @@ public class HasRoleBeanPostProcessor implements BeanPostProcessor {
                     Object argument = field.get(bean);
 
                     arguments[i] = argument;
-                    argumentClasses[i] = field.getType();
+                    argumentTypes[i] = field.getType();
                 } catch (IllegalAccessException e) {
                     throw new RuntimeException(e);
                 }
 
             }
 
-            bean = enhancer.create(argumentClasses, arguments);
+            bean = enhancer.create(argumentTypes, arguments);
         }
 
         return bean;

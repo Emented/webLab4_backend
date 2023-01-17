@@ -46,7 +46,7 @@ public class HitApiController {
     }
 
     @GetMapping("/hits")
-    protected ResponseEntity<List<HitCheckDTO>> getHitsByR(@RequestParam Double radius,
+    protected ResponseEntity<List<HitCheckDTO>> getHitsByR(@RequestParam(required = false) Double radius,
                                                            @AuthenticationPrincipal CustomBearerUser customBearerUser) {
         List<HitCheckDTO> result;
 
@@ -60,5 +60,14 @@ public class HitApiController {
         return ResponseEntity.ok().body(result);
     }
 
+    @HasRole("USER_ROLE")
+    @GetMapping("foo")
+    public String foo() {
+        return bar();
+    }
 
+    @HasRole("DIRECTOR_ROLE")
+    public String bar() {
+        return "bar";
+    }
 }

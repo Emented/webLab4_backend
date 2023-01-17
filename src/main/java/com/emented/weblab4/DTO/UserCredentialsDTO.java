@@ -7,7 +7,6 @@ import lombok.Data;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.List;
 
@@ -23,8 +22,7 @@ public class UserCredentialsDTO {
     @Size(min = 5, max = 25)
     private String password;
 
-    @NotNull
-    @Size(min = 0, max = 3)
+    @Size(max = 3)
     private List<Role> roles;
 
 
